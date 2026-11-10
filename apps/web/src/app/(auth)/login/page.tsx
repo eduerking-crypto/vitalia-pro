@@ -45,7 +45,6 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError("Correo o contraseña incorrectos.");
-        setShowMfa(true);
         return;
       }
 

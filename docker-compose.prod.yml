@@ -58,4 +58,4 @@ services:
     restart: unless-stopped
     volumes: []
     ports:
-      - "3000:3000"
+      - "3001:3000"

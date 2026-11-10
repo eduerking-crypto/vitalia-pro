@@ -12,7 +12,10 @@ import { mockAdapter } from "./mock/adapter";
  */
 
 const DEMO_FORCED =
-  process.env.NEXT_PUBLIC_DEMO_MODE === "true" || !API_BASE_URL;
+  process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+  !API_BASE_URL ||
+  API_BASE_URL.includes("localhost") ||
+  API_BASE_URL.includes("127.0.0.1");
 
 let demoFallbackActive = false;
 

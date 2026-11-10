@@ -86,11 +86,11 @@ services:
     command: sh -c "corepack enable && pnpm install && pnpm --filter @vitalia/web dev --port 3000 --hostname 0.0.0.0"
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000
-      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_URL: http://localhost:3001
       NEXTAUTH_SECRET: dev-nextauth-secret
       VITALIA_DEMO_MODE: "false"
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - ./:/app
       - nodemodules:/app/node_modules

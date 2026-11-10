@@ -1,26 +1,44 @@
 import type { AuthResponse } from "@vitalia/shared-types";
 import { DEMO_CREDENTIALS } from "@/lib/constants";
+import { isDemoMode } from "./client";
 
 /**
- * Login desde el servidor (NextAuth authorize) contra la API FastAPI.
- * Si la API no está disponible, cae al usuario demo para que la app
- * siga siendo navegable en modo demostración.
+ * Login contra la API FastAPI.
+ * En modo demostración (API no disponible), autentica directamente al
+ * usuario demo sin llamar a la red.
  */
 export async function loginWithApi(input: {
   email: string;
   password: string;
   mfaCode?: string;
 }): Promise<AuthResponse | null> {
+  // Modo demostración: credenciales demo sin MFA, sin llamadas de red.
+  if (isDemoMode()) {
+    const email = input.email.trim().toLowerCase();
+    if (
+      email === DEMO_CREDENTIALS.email &&
+      input.password === DEMO_CREDENTIALS.password
+    ) {
+      return DEMO_CREDENTIALS.authResponse;
+    }
+    return null;
+  }
+
   const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
     const res = await fetch(`${apiBase}/api/v1/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: input.email, password: input.password }),
-      signal: AbortSignal.timeout(6000),
+      signal: controller.signal,
       cache: "no-store",
     });
+
+    clearTimeout(timeout);
 
     if (!res.ok) return null;
 
@@ -43,14 +61,6 @@ export async function loginWithApi(input: {
 
     return data;
   } catch {
-    // API no disponible → usuario demo
-    const email = input.email.trim().toLowerCase();
-    if (
-      email === DEMO_CREDENTIALS.email &&
-      input.password === DEMO_CREDENTIALS.password
-    ) {
-      return DEMO_CREDENTIALS.authResponse;
-    }
     return null;
   }
 }
@@ -63,13 +73,19 @@ export async function registerWithApi(input: {
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
     const res = await fetch(`${apiBase}/api/v1/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
-      signal: AbortSignal.timeout(6000),
+      signal: controller.signal,
       cache: "no-store",
     });
+
+    clearTimeout(timeout);
+
     if (res.ok) return { ok: true };
     const body = (await res.json().catch(() => null)) as { detail?: string } | null;
     return { ok: false, error: body?.detail ?? "No se pudo crear la cuenta." };
