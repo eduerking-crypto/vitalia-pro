@@ -1,0 +1,103 @@
+# VITALIA PRO — Entorno de desarrollo local
+# Uso: docker compose up -d
+name: vitalia-pro
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: vitalia-db
+    environment:
+      POSTGRES_USER: vitalia
+      POSTGRES_PASSWORD: vitalia
+      POSTGRES_DB: vitalia
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vitalia -d vitalia"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: vitalia-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: vitalia-api
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    environment:
+      VITALIA_ENV: development
+      SECRET_KEY: dev-secret-change-me
+      DATABASE_URL: postgresql+asyncpg://vitalia:vitalia@db:5432/vitalia
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CORS_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000"
+      FIELD_ENCRYPTION_KEY: "dev-field-key-32-bytes-aes-256!!"  # 32 bytes para Fernet (base64)
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/api:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: vitalia-worker
+    command: celery -A app.core.celery_app:celery_app worker --loglevel=info --concurrency=2
+    environment:
+      VITALIA_ENV: development
+      SECRET_KEY: dev-secret-change-me
+      DATABASE_URL: postgresql+asyncpg://vitalia:vitalia@db:5432/vitalia
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+    volumes:
+      - ./apps/api:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    image: node:22-alpine
+    container_name: vitalia-web
+    working_dir: /app
+    command: sh -c "corepack enable && pnpm install && pnpm --filter @vitalia/web dev --port 3000 --hostname 0.0.0.0"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: dev-nextauth-secret
+      VITALIA_DEMO_MODE: "false"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - nodemodules:/app/node_modules
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  redisdata:
+  nodemodules:

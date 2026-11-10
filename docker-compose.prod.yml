@@ -1,0 +1,61 @@
+# VITALIA PRO — Entorno de producción
+# Uso: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+name: vitalia-pro
+
+services:
+  db:
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?set in .env}
+    ports: []
+    restart: unless-stopped
+
+  redis:
+    ports: []
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --proxy-headers"
+    environment:
+      VITALIA_ENV: production
+      SECRET_KEY: ${SECRET_KEY:?set in .env}
+      DATABASE_URL: ${DATABASE_URL:?set in .env}
+      REDIS_URL: ${REDIS_URL:?set in .env}
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL:?set in .env}
+      CORS_ORIGINS: ${CORS_ORIGINS:?set in .env}
+      FIELD_ENCRYPTION_KEY: ${FIELD_ENCRYPTION_KEY:?set in .env}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    ports: []
+    restart: unless-stopped
+    volumes: []
+
+  worker:
+    environment:
+      VITALIA_ENV: production
+      SECRET_KEY: ${SECRET_KEY:-}
+      DATABASE_URL: ${DATABASE_URL:-}
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL:-}
+    restart: unless-stopped
+    volumes: []
+
+  web:
+    build:
+      context: ./
+      dockerfile: apps/web/Dockerfile
+    environment:
+      NEXT_PUBLIC_API_URL: ${PUBLIC_API_URL:?set in .env}
+      NEXTAUTH_URL: ${PUBLIC_WEB_URL:?set in .env}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?set in .env}
+      NODE_ENV: production
+    restart: unless-stopped
+    volumes: []
+    ports:
+      - "3000:3000"
