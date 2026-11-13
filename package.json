@@ -1,0 +1,17 @@
+{
+  "name": "vitalia-pro",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VITALIA Pro — gestión integral de salud (Next.js 15 + FastAPI)",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "pnpm --filter @vitalia/web dev",
+    "dev:3003": "pnpm --filter @vitalia/web dev --port 3003",
+    "build": "pnpm --filter @vitalia/web build",
+    "start": "pnpm --filter @vitalia/web start",
+    "lint": "pnpm --filter @vitalia/web lint",
+    "typecheck": "pnpm --filter @vitalia/web typecheck",
+    "test": "pnpm --filter @vitalia/web test",
+    "clean": "pnpm --filter @vitalia/web clean"
+  }
+}
