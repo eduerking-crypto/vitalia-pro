@@ -32,7 +32,13 @@ class Settings(BaseSettings):
     # Alias en minúsculas para comodidad en el código.
     @property
     def database_url(self) -> str:
-        return self.DATABASE_URL
+        """Normaliza la URL para asyncpg (Render/Neon entregan `postgres://`)."""
+        url = self.DATABASE_URL
+        if url.startswith("postgres://"):
+            url = "postgresql+asyncpg://" + url[len("postgres://"):]
+        elif url.startswith("postgresql://"):
+            url = "postgresql+asyncpg://" + url[len("postgresql://"):]
+        return url
 
     @property
     def redis_url(self) -> str:

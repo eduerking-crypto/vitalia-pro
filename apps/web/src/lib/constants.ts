@@ -9,6 +9,11 @@ import {
   Settings,
   Stethoscope,
   UserRound,
+  Building2,
+  CalendarDays,
+  LayoutDashboard,
+  Users,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 import type { AuthResponse } from "@vitalia/shared-types";
@@ -43,6 +48,11 @@ export const DEMO_CREDENTIALS = {
   } satisfies AuthResponse,
 } as const;
 
+export const ORG_CREDENTIALS = {
+  email: "admin@vitalia.ips",
+  password: "Ips1234!",
+} as const;
+
 export interface NavItem {
   href: string;
   label: string;
@@ -62,6 +72,15 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/documents", label: "Documentos", icon: FileText, description: "Expediente seguro" },
   { href: "/profile", label: "Perfil", icon: UserRound, description: "Datos médicos" },
   { href: "/settings", label: "Ajustes", icon: Settings, description: "Preferencias" },
+];
+
+export const ORG_NAV_ITEMS: NavItem[] = [
+  { href: "/org", label: "Resumen", icon: LayoutDashboard, description: "KPIs de la organización" },
+  { href: "/org/pacientes", label: "Pacientes", icon: Users, description: "Seguimiento y riesgo" },
+  { href: "/org/agenda", label: "Agenda", icon: CalendarDays, description: "Citas y teleconsulta" },
+  { href: "/org/equipo", label: "Equipo", icon: Stethoscope, description: "Profesionales y carga" },
+  { href: "/org/reportes", label: "Reportes", icon: BarChart3, description: "Adherencia y cohortes" },
+  { href: "/org/ajustes", label: "Ajustes", icon: Settings, description: "Marca y plan" },
 ];
 
 export const MEAL_TYPE_LABELS: Record<string, string> = {

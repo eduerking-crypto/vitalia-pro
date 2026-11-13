@@ -16,6 +16,7 @@ from app.api.v1.endpoints import (
     documents,
     notifications,
     settings,
+    organization,
 )
 
 router = APIRouter(prefix="/api/v1")
@@ -31,3 +32,4 @@ router.include_router(labs.router, tags=["labs"])
 router.include_router(documents.router, tags=["documents"])
 router.include_router(notifications.router, tags=["notifications"])
 router.include_router(settings.router, tags=["settings"])
+router.include_router(organization.router, tags=["organization"])

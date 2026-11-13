@@ -25,3 +25,7 @@ from app.schemas.labs import LabResultOut, LabResultCreate
 from app.schemas.document import DocumentOut, DocumentCreate, DocumentShareOut
 from app.schemas.notification import NotificationOut
 from app.schemas.settings import SettingsOut, SettingsUpdate
+from app.schemas.organization import (  # noqa: F401
+    OrgOut, OrgMemberOut, OrgPatientOut, OrgAppointmentOut,
+    OrgSummaryOut, OrgAuditOut, OrgReportOut, OrgKpiPoint,
+)

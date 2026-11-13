@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart } from "lucide-react";
+import { Building2, Heart } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +47,25 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           </Link>
         );
       })}
+
+      <div className="mt-auto space-y-1 border-t border-[color:var(--color-border)] pt-3">
+        <Link
+          href="/org"
+          onClick={onMobileClose}
+          className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-secondary transition-colors hover:bg-serene-50 hover:text-ink dark:hover:bg-neutral-900"
+        >
+          <Building2 className="h-5 w-5 text-serene-500" aria-hidden="true" />
+          Portal empresa
+        </Link>
+        <Link
+          href="/presentacion"
+          onClick={onMobileClose}
+          className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-secondary transition-colors hover:bg-sage-50 hover:text-ink dark:hover:bg-neutral-900"
+        >
+          <Heart className="h-5 w-5 text-sage-500" aria-hidden="true" />
+          Presentación
+        </Link>
+      </div>
     </nav>
   );
 

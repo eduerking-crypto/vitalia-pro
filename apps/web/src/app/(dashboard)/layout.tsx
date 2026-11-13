@@ -8,7 +8,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { useAuthStore } from "@/stores/use-auth-store";
 import { DEMO_CREDENTIALS, STATIC_AUTH } from "@/lib/constants";
-import { ensureDemoSession } from "@/lib/auth-client";
+import { ensureSessionAs } from "@/lib/auth-client";
 
 /** Modo demostración local (sin backend): datos de ejemplo en el navegador. */
 const DEMO =
@@ -47,7 +47,7 @@ export default function DashboardLayout({
   useEffect(() => {
     if (!STATIC_AUTH) return;
     let cancelled = false;
-    ensureDemoSession()
+    ensureSessionAs(DEMO_CREDENTIALS.email, DEMO_CREDENTIALS.password)
       .catch(() => {
         /* sin API disponible: el cliente cae al modo demostración */
       })

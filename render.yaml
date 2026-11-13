@@ -1,0 +1,34 @@
+# Despliegue en Render (API + PostgreSQL)
+# 1) Conecta este repositorio en Render → Blueprint
+# 2) Render crea el servicio y la base de datos
+# 3) Si usas el plan gratuito, el servicio se suspende por inactividad
+
+services:
+  - type: web
+    name: vitalia-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: ./apps/api
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: VITALIA_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vitalia-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FIELD_ENCRYPTION_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+
+databases:
+  - name: vitalia-db
+    plan: basic-256mb
+    databaseName: vitalia
+    user: vitalia

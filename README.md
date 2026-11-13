@@ -16,9 +16,24 @@ y expediente médico seguro. Diseñada bajo criterios **HIPAA** y **GDPR**.
 | | |
 |---|---|
 | **Demo pública** | https://eduerking-crypto.github.io/vitalia-pro/ |
+| **Portal empresa (IPS)** | https://eduerking-crypto.github.io/vitalia-pro/org |
+| **Presentación comercial** | https://eduerking-crypto.github.io/vitalia-pro/presentacion |
 | **Repositorio** | https://github.com/eduerking-crypto/vitalia-pro |
 | **APK Android** | [última release](https://github.com/eduerking-crypto/vitalia-pro/releases/latest) |
-| **API** | local (`scripts/run-api.ps1`) · ver [docs/API.md](docs/API.md) |
+
+### Credenciales de demostración
+
+| Portal | Usuario | Contraseña |
+|---|---|---|
+| Paciente | `demo@vitalia.health` | `Demo1234!` |
+| Empresa (IPS) | `admin@vitalia.ips` | `Ips1234!` |
+
+### Documentación
+
+- [Plan de negocio y propuesta comercial](docs/PLAN-NEGOCIO.md)
+- [Arquitectura y modelo multiempresa](docs/ARQUITECTURA.md)
+- [API y endpoints](docs/API.md)
+- [Despliegue permanente](docs/DESPLIEGUE.md)
 
 En local, en un minuto:
 
@@ -36,7 +51,9 @@ Credenciales de referencia: `demo@vitalia.health` / `Demo1234!`
 
 ---
 
-## ✨ Funcionalidades (11 pantallas)
+## ✨ Funcionalidades
+
+### Portal del paciente (11 pantallas)
 
 | Módulo | Ruta | Descripción |
 |---|---|---|
@@ -52,6 +69,20 @@ Credenciales de referencia: `demo@vitalia.health` / `Demo1234!`
 | **Perfil** | `/profile` | Alergias, condiciones crónicas y credencial de emergencia |
 | **Ajustes** | `/settings` | Tema claro/oscuro, accesibilidad y preferencias |
 
+
+### Portal de empresa (IPS/clínica)
+
+| Módulo | Ruta | Descripción |
+|---|---|---|
+| **Resumen** | `/org` | KPIs, adherencia semanal, consultas y actividad auditada |
+| **Pacientes** | `/org/pacientes` | Listado priorizado por riesgo con adherencia y signos vitales |
+| **Agenda** | `/org/agenda` | Citas de los próximos 14 días de toda la organización |
+| **Equipo** | `/org/equipo` | Profesionales, especialidad y carga asistencial |
+| **Reportes** | `/org/reportes` | Adherencia por profesional, cohortes y condiciones frecuentes |
+| **Ajustes** | `/org/ajustes` | Datos de la empresa, plan, accesos y exportación CSV |
+
+> Modelo multiempresa: una organización (IPS) con su equipo y sus pacientes.
+> Roles `patient`, `professional` y `admin` con datos aislados por `org_id`.
 ---
 
 ## 🏗️ Stack

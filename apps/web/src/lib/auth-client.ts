@@ -40,3 +40,14 @@ export async function ensureDemoSession(): Promise<void> {
   if (useAuthStore.getState().accessToken) return;
   await loginAgainstApi(DEMO_CREDENTIALS.email, DEMO_CREDENTIALS.password);
 }
+
+/**
+ * Garantiza que la sesión activa sea la del usuario indicado.
+ * Permite alternar entre el portal de paciente y el de empresa.
+ */
+export async function ensureSessionAs(email: string, password: string): Promise<void> {
+  if (!STATIC_AUTH) return;
+  const store = useAuthStore.getState();
+  if (store.accessToken && store.user?.email === email) return;
+  await loginAgainstApi(email, password);
+}

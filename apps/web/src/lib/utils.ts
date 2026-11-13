@@ -25,7 +25,11 @@ export function formatDateTime(date: string | Date): string {
 }
 
 export function formatTimeHM(time: string | Date): string {
-  const d = typeof time === "string" ? parseISO(`2000-01-01T${time}`) : time;
+  // Acepta "HH:mm", "HH:mm:ss" o un ISO completo ("2026-01-01T09:30:00").
+  const raw =
+    typeof time === "string" && time.includes("T") ? (time.split("T")[1] ?? "00:00") : time;
+  const d = typeof raw === "string" ? parseISO(`2000-01-01T${raw}`) : raw;
+  if (Number.isNaN(d.getTime())) return "—";
   return format(d, "HH:mm");
 }
 
