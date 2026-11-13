@@ -11,7 +11,15 @@ y expediente médico seguro. Diseñada bajo criterios **HIPAA** y **GDPR**.
 
 ---
 
-## ⚡ Acceso rápido (modo demostración)
+## ⚡ Acceso rápido
+ 
+| | |
+|---|---|
+| **Demo pública** | https://eduerking-crypto.github.io/vitalia-pro/ |
+| **Repositorio** | https://github.com/eduerking-crypto/vitalia-pro |
+| **APK Android** | [última release](https://github.com/eduerking-crypto/vitalia-pro/releases/latest) |
+
+En local, en un minuto:
 
 ```bash
 pnpm install
