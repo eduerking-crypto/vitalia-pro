@@ -60,3 +60,6 @@ apps/mobile/www/
 
 # Artefactos de distribución
 dist-apk/
+
+# Base de datos local de la API
+apps/api/vitalia.db
