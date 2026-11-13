@@ -19,32 +19,38 @@ function New-RoundedPath([float]$x, [float]$y, [float]$w, [float]$h, [float]$r) 
 
 function Draw-Heart($g, [float]$size, [float]$offX = 0, [float]$offY = 0, [switch]$Transparent) {
     $s = $size / 1024.0
+    $old = $g.Transform
+    $m = New-Object System.Drawing.Drawing2D.Matrix
+    $m.Scale($s, $s)
+    $m.Translate($offX, $offY, [System.Drawing.Drawing2D.MatrixOrder]::Append)
+    $g.Transform = $m
+
     if (-not $Transparent) {
         $bg = New-RoundedPath 0 0 1024 1024 220
         $brush = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
             (New-Object System.Drawing.Point 0, 0),
             (New-Object System.Drawing.Point 1024, 1024),
-            [System.Drawing.ColorTranslator]::FromHtml("#7FA37F"),
-            [System.Drawing.ColorTranslator]::FromHtml("#527E86"))
+            [System.Drawing.ColorTranslator]::FromHtml("#8AAF8A"),
+            [System.Drawing.ColorTranslator]::FromHtml("#4E7B84"))
         $g.FillPath($brush, $bg)
         $brush.Dispose(); $bg.Dispose()
     }
+
+    # Corazon: una sola curva bezier (sin costuras de antialiasing).
     $heart = New-Object System.Drawing.Drawing2D.GraphicsPath
     $heart.StartFigure()
-    $heart.AddBezier(512, 830, 512, 830, 150, 600, 150, 380)
-    $heart.AddBezier(150, 380, 150, 250, 250, 170, 360, 170)
-    $heart.AddBezier(360, 170, 440, 170, 490, 220, 512, 270)
-    $heart.AddBezier(512, 270, 534, 220, 584, 170, 664, 170)
-    $heart.AddBezier(664, 170, 774, 170, 874, 250, 874, 380)
-    $heart.AddBezier(874, 380, 874, 600, 512, 830, 512, 830)
+    $heart.AddBezier(512, 850, 512, 850, 150, 610, 150, 380)
+    $heart.AddBezier(150, 380, 150, 245, 250, 165, 360, 165)
+    $heart.AddBezier(360, 165, 445, 165, 495, 220, 512, 275)
+    $heart.AddBezier(512, 275, 529, 220, 579, 165, 664, 165)
+    $heart.AddBezier(664, 165, 774, 165, 874, 245, 874, 380)
+    $heart.AddBezier(874, 380, 874, 610, 512, 850, 512, 850)
     $heart.CloseFigure()
-    $m = New-Object System.Drawing.Drawing2D.Matrix
-    $m.Scale($s, $s)
-    $m.Translate($offX, $offY)
-    $heart.Transform($m)
     $white = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::White)
     $g.FillPath($white, $heart)
-    $white.Dispose(); $heart.Dispose(); $m.Dispose()
+    $white.Dispose(); $heart.Dispose()
+    $g.Transform = $old
+    $m.Dispose()
 }
 
 function Save-Icon([int]$size, [string]$path, [switch]$Round, [switch]$Foreground) {
