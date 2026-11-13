@@ -95,7 +95,6 @@ export function MedicationList({ medications, onEdit }: MedicationListProps) {
               title="Eliminar medicamento"
               description={`¿Estás seguro de que quieres eliminar "${med.name}"? Esta acción no se puede deshacer.`}
               size="sm"
-              children=""
               footer={
                 <>
                   <Button variant="ghost" onClick={() => setOpenId(null)}>Cancelar</Button>

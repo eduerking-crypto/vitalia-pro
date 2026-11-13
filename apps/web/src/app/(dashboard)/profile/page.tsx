@@ -5,6 +5,7 @@ import { UserRound, ShieldCheck, AlertTriangle } from "lucide-react";
 import { fetchProfile, updateProfile } from "@/lib/api/profile";
 import { fetchMedicalProfile, updateMedicalProfile, addAllergy, removeAllergy } from "@/lib/api/profile";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Allergy, MedicalProfile, User } from "@vitalia/shared-types";
 import { toast } from "@/stores/use-notification-store";
 import { apiErrorMessage } from "@/lib/utils";
 import { Tabs } from "@/components/ui/tabs";
@@ -27,8 +28,7 @@ export default function ProfilePage() {
   });
 
   const updateProfileMutation = useMutation({
-    mutationFn: (data: { full_name?: string; date_of_birth?: string; biological_sex?: string }) =>
-      updateProfile(data as any),
+    mutationFn: (data: Partial<User>) => updateProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast.success("Perfil actualizado");
@@ -37,7 +37,7 @@ export default function ProfilePage() {
   });
 
   const updateMedicalMutation = useMutation({
-    mutationFn: (data: Record<string, unknown>) => updateMedicalProfile(data as any),
+    mutationFn: (data: Partial<MedicalProfile>) => updateMedicalProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["medical"] });
       toast.success("Perfil médico actualizado");
@@ -46,7 +46,8 @@ export default function ProfilePage() {
   });
 
   const addAllergyMutation = useMutation({
-    mutationFn: (data: { allergen: string; severity: string; reaction: string }) => addAllergy({ ...data, severity: data.severity as any }),
+    mutationFn: (data: { allergen: string; severity: Allergy["severity"]; reaction: string }) =>
+      addAllergy(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["medical"] });
       toast.success("Alergia añadida");
@@ -87,7 +88,7 @@ export default function ProfilePage() {
             icon: <ShieldCheck className="h-4 w-4" aria-hidden="true" />,
             content: (
               <>
-                <MedicalForm medical={medical ?? {}} onUpdate={updateMedicalMutation.mutate} pending={updateMedicalMutation.isPending} />
+                <MedicalForm medical={medical} onUpdate={updateMedicalMutation.mutate} pending={updateMedicalMutation.isPending} />
                 <AllergyTags allergies={medical?.allergies ?? []} onAdd={addAllergyMutation.mutate} onRemove={removeAllergyMutation.mutate} />
                 <EmergencyCard medical={medical} />
               </>
@@ -100,7 +101,7 @@ export default function ProfilePage() {
   );
 }
 
-function MedicalForm({ medical, onUpdate, pending }: { medical: any; onUpdate: (d: any) => void; pending: boolean }) {
+function MedicalForm({ medical, onUpdate, pending }: { medical?: MedicalProfile; onUpdate: (d: Partial<MedicalProfile>) => void; pending: boolean }) {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Card>
@@ -134,7 +135,7 @@ function MedicalForm({ medical, onUpdate, pending }: { medical: any; onUpdate: (
               </span>
             </div>
           )}
-          <Button onClick={() => onUpdate(medical)} loading={pending} className="w-full">Guardar cambios físicos</Button>
+          <Button onClick={() => onUpdate(medical ?? {})} loading={pending} className="w-full">Guardar cambios físicos</Button>
         </CardContent>
       </Card>
       <Card>

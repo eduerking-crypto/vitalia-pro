@@ -3,11 +3,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
+import type { User } from "@vitalia/shared-types";
 import { toast } from "@/stores/use-notification-store";
-import { apiErrorMessage } from "@/lib/utils";
 import { UserRound } from "lucide-react";
-import { Button, Input, Select, Alert } from "@/components/ui";
+import { Button, Input, Select } from "@/components/ui";
 
 const schema = z.object({
   full_name: z.string().min(2, "Indica tu nombre completo"),
@@ -24,7 +23,7 @@ const SEX_LABELS: Record<string, string> = {
 };
 
 interface ProfileFormProps {
-  profile: any;
+  profile?: User;
   onUpdate: (data: FormValues) => void;
   pending: boolean;
 }

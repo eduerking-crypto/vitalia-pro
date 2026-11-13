@@ -11,6 +11,9 @@
     "start": "pnpm --filter @vitalia/web start",
     "lint": "pnpm --filter @vitalia/web lint",
     "typecheck": "pnpm --filter @vitalia/web typecheck",
+    "build:static": "pnpm --filter @vitalia/web build:static",
+    "build:pages": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-static.ps1 -BasePath /vitalia-pro -SkipMobileCopy",
+    "publish:pages": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/publish-pages.ps1",
     "test": "pnpm --filter @vitalia/web test",
     "clean": "pnpm --filter @vitalia/web clean"
   }

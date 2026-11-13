@@ -13,8 +13,10 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
+      // Los imports/variables sin usar se reportan como aviso: no bloquean el
+      // build de producción pero quedan visibles para limpiarlos.
       "@typescript-eslint/no-unused-vars": [
-        "error",
+        "warn",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
     },

@@ -1,4 +1,5 @@
 import { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios";
+import type { Allergy } from "@vitalia/shared-types";
 import {
   buildAppointments,
   buildDocuments,
@@ -196,7 +197,7 @@ const routes: Route[] = [
         id: uid("e"),
         profile_id: medicalProfile.id,
         allergen: strBody(body, "allergen"),
-        severity: (String(body.severity ?? "mild") as any),
+        severity: String(body.severity ?? "mild") as Allergy["severity"],
         reaction: String(body.reaction ?? ""),
       };
       medicalProfile.allergies.push(allergy);

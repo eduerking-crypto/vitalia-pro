@@ -52,6 +52,7 @@ Thumbs.db
 apps/mobile/android/.gradle/
 apps/mobile/android/app/build/
 apps/mobile/android/local.properties
+apps/mobile/www/
 *.apk
 *.aab
 *.jks

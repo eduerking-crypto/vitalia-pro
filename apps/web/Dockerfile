@@ -24,6 +24,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_URL=http://localhost:8000
 ARG NEXTAUTH_URL=http://localhost:3000
 ARG NEXTAUTH_SECRET=build-time-secret
+ENV BUILD_STANDALONE=true
 RUN pnpm --filter @vitalia/web build
 
 # 3) Runtime

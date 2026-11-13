@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# VITALIA Pro — datos de demostración, sin información real de salud.

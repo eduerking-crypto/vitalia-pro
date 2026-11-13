@@ -3,11 +3,14 @@
 import { useState } from "react";
 import { Tag } from "@/components/ui/tag";
 import { Input, Select, Button } from "@/components/ui";
+import type { Allergy } from "@vitalia/shared-types";
 import { ALLERGY_SEVERITY_LABELS } from "@/lib/constants";
 
+type Severity = Allergy["severity"];
+
 interface AllergyTagsProps {
-  allergies: Array<{ id: string; allergen: string; severity: string; reaction: string }>;
-  onAdd: (data: { allergen: string; severity: string; reaction: string }) => void;
+  allergies: Allergy[];
+  onAdd: (data: { allergen: string; severity: Severity; reaction: string }) => void;
   onRemove: (id: string) => void;
 }
 
@@ -22,10 +25,10 @@ type TagPropsVariant = "sage" | "serene" | "warning" | "danger" | "neutral";
 
 export function AllergyTags({ allergies, onAdd, onRemove }: AllergyTagsProps) {
   const [allergen, setAllergen] = useState("");
-  const [severity, setSeverity] = useState("moderate");
+  const [severity, setSeverity] = useState<Severity>("moderate");
   const [reaction, setReaction] = useState("");
 
-  const severityOptions: Array<{ value: string; label: string }> = [
+  const severityOptions: Array<{ value: Severity; label: string }> = [
     { value: "mild", label: "Leve" },
     { value: "moderate", label: "Moderada" },
     { value: "severe", label: "Grave" },
@@ -57,7 +60,7 @@ export function AllergyTags({ allergies, onAdd, onRemove }: AllergyTagsProps) {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <Input label="Alergeno" value={allergen} onChange={(e) => setAllergen(e.target.value)} placeholder="Ej. Penicilina" />
-        <Select value={severity} onChange={(e) => setSeverity(e.target.value as any)}>
+        <Select value={severity} onChange={(e) => setSeverity(e.target.value as Severity)}>
           {severityOptions.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
