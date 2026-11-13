@@ -2,17 +2,20 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime
+from uuid import UUID
+
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class VitalSignOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
-    user_id: str
-    recorded_at: str
+    id: UUID
+    user_id: UUID
+    recorded_at: datetime
     systolic_bp: int | None
     diastolic_bp: int | None
     heart_rate: int | None
@@ -23,7 +26,7 @@ class VitalSignOut(BaseModel):
 
 
 class VitalSignCreate(BaseModel):
-    recorded_at: str | None = None
+    recorded_at: datetime | None = None
     systolic_bp: int
     diastolic_bp: int
     heart_rate: int
@@ -36,9 +39,9 @@ class VitalSignCreate(BaseModel):
 class SleepRecordOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
-    user_id: str
-    date: str
+    id: UUID
+    user_id: UUID
+    date: date
     duration_minutes: int
     deep_sleep_minutes: int
     rem_sleep_minutes: int
@@ -51,9 +54,9 @@ class SleepRecordOut(BaseModel):
 class MoodRecordOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
-    user_id: str
-    date: str
+    id: UUID
+    user_id: UUID
+    date: date
     mood: int
     emoji: str | None
     notes: str | None
@@ -76,9 +79,8 @@ class HealthScoreOut(BaseModel):
     score: int
     label: str
     components: list[HealthScoreComponentOut]
-    computed_at: str
+    computed_at: datetime | None = None
 
 
-from pydantic import Field  # noqa: E402
 
 MoodRecordCreate.model_rebuild()

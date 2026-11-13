@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime
+from uuid import UUID
+
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -19,11 +22,11 @@ class LabMetricOut(BaseModel):
 class LabResultOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
-    user_id: str
+    id: UUID
+    user_id: UUID
     test_name: str
     lab_name: str
-    date: str
+    date: date
     status: str
     file_url: str
     values: list[LabMetricOut] = []
@@ -40,5 +43,5 @@ class LabMetricIn(BaseModel):
 class LabResultCreate(BaseModel):
     test_name: str = Field(min_length=1)
     lab_name: str = Field(min_length=1)
-    date: str
+    date: date
     values: list[LabMetricIn] = Field(default_factory=list)

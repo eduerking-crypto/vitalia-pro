@@ -1,7 +1,7 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { useAuthStore } from "@/stores/use-auth-store";
 import { useNotificationStore } from "@/stores/use-notification-store";
-import { API_BASE_URL } from "@/lib/constants";
+import { API_BASE_URL, STATIC_AUTH } from "@/lib/constants";
 import { mockAdapter } from "./mock/adapter";
 
 /**
@@ -12,10 +12,11 @@ import { mockAdapter } from "./mock/adapter";
  */
 
 const DEMO_FORCED =
-  process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-  !API_BASE_URL ||
-  API_BASE_URL.includes("localhost") ||
-  API_BASE_URL.includes("127.0.0.1");
+  !STATIC_AUTH &&
+  (process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    !API_BASE_URL ||
+    API_BASE_URL.includes("localhost") ||
+    API_BASE_URL.includes("127.0.0.1"));
 
 let demoFallbackActive = false;
 

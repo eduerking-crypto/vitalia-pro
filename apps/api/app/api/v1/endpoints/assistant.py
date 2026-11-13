@@ -4,12 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_session, get_current_user
 from app.agents.router import run_assistant
-from app.models.medical import User as _  # noqa: F401  (ensure models load)
 from app.schemas import ChatRequest, ChatResponse, ChatMessageOut
 
 router = APIRouter()

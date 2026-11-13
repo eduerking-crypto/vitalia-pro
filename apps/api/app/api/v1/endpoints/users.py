@@ -6,6 +6,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
@@ -19,6 +20,16 @@ from app.schemas import (
 )
 
 router = APIRouter()
+
+
+async def _load_profile(session: AsyncSession, user_id: UUID) -> MedicalProfile | None:
+    """Carga el perfil médico con sus alergias (evita lazy-load en async)."""
+    result = await session.execute(
+        select(MedicalProfile)
+        .options(selectinload(MedicalProfile.allergies))
+        .where(MedicalProfile.user_id == user_id)
+    )
+    return result.scalar_one_or_none()
 
 
 @router.get("/users/me", response_model=UserOut)
@@ -53,9 +64,10 @@ async def get_medical(
     session: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ) -> Any:
-    if not current_user.medical_profile:
+    profile = await _load_profile(session, current_user.id)
+    if not profile:
         raise HTTPException(status_code=404, detail="Perfil médico no encontrado.")
-    return current_user.medical_profile
+    return profile
 
 
 @router.put("/users/me/medical", response_model=MedicalProfileOut)
@@ -65,13 +77,13 @@ async def update_medical(
     session: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ) -> Any:
-    if not current_user.medical_profile:
+    profile = await _load_profile(session, current_user.id)
+    if not profile:
         raise HTTPException(status_code=404, detail="Perfil médico no encontrado.")
-    profile = current_user.medical_profile
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(profile, field, value)
     await session.flush()
-    await session.refresh(profile)
+    await session.refresh(profile, attribute_names=["allergies"])
     await audit_record(
         session,
         actor_id=str(current_user.id),
@@ -90,10 +102,11 @@ async def add_allergy(
     session: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ) -> Any:
-    if not current_user.medical_profile:
+    profile = await _load_profile(session, current_user.id)
+    if not profile:
         raise HTTPException(status_code=404, detail="Perfil médico no encontrado.")
     from app.models.user import Allergy
-    allergy = Allergy(profile_id=current_user.medical_profile.id, **data.model_dump())
+    allergy = Allergy(profile_id=profile.id, **data.model_dump())
     session.add(allergy)
     await session.flush()
     await session.refresh(allergy)
@@ -117,8 +130,11 @@ async def remove_allergy(
 ) -> None:
     from app.models.user import Allergy
     from uuid import UUID
+    profile = await _load_profile(session, current_user.id)
+    if not profile:
+        raise HTTPException(status_code=404, detail="Perfil médico no encontrado.")
     result = await session.execute(
-        select(Allergy).where(Allergy.id == UUID(allergy_id), Allergy.profile_id == current_user.medical_profile.id)
+        select(Allergy).where(Allergy.id == UUID(allergy_id), Allergy.profile_id == profile.id)
     )
     allergy = result.scalar_one_or_none()
     if not allergy:

@@ -18,6 +18,7 @@ y expediente médico seguro. Diseñada bajo criterios **HIPAA** y **GDPR**.
 | **Demo pública** | https://eduerking-crypto.github.io/vitalia-pro/ |
 | **Repositorio** | https://github.com/eduerking-crypto/vitalia-pro |
 | **APK Android** | [última release](https://github.com/eduerking-crypto/vitalia-pro/releases/latest) |
+| **API** | local (`scripts/run-api.ps1`) · ver [docs/API.md](docs/API.md) |
 
 En local, en un minuto:
 
@@ -113,6 +114,18 @@ docker compose up -d --build
 ```bash
 make seed   # docker compose exec api python -m app.seed
 ```
+
+### API con SQLite (sin Docker)
+
+```bash
+powershell -File scripts/run-api.ps1   # crea venv, siembra y arranca en :8010
+```
+
+- API: http://localhost:8010 · Swagger: http://localhost:8010/docs
+- Detalle de endpoints y variables: [docs/API.md](docs/API.md)
+
+La web puede compilarse apuntando a esa API (`-ApiUrl`), y el cliente cae al
+modo demostración si el backend no responde.
 
 ---
 

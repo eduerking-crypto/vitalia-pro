@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime
+from uuid import UUID
+
 from datetime import date
 from typing import Any
 
@@ -11,16 +14,16 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
+    id: UUID
     email: str
     full_name: str
-    date_of_birth: str | None = None
+    date_of_birth: date | None = None
     biological_sex: str | None = None
     role: str
     is_active: bool
     mfa_enabled: bool
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
 
 
 class AuthTokens(BaseModel):
@@ -57,8 +60,8 @@ class UserUpdate(BaseModel):
 class MedicalProfileOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
-    user_id: str
+    id: UUID
+    user_id: UUID
     blood_type: str | None
     height_cm: float | None
     weight_kg: float | None
@@ -86,8 +89,8 @@ class MedicalProfileUpdate(BaseModel):
 class AllergyOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
-    profile_id: str
+    id: UUID
+    profile_id: UUID
     allergen: str
     severity: str
     reaction: str | None

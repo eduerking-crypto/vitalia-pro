@@ -29,5 +29,30 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
         case_sensitive = True
 
+    # Alias en minúsculas para comodidad en el código.
+    @property
+    def database_url(self) -> str:
+        return self.DATABASE_URL
+
+    @property
+    def redis_url(self) -> str:
+        return self.REDIS_URL
+
+    @property
+    def celery_broker_url(self) -> str:
+        return self.CELERY_BROKER_URL
+
+    @property
+    def cors_origins(self) -> str:
+        return self.CORS_ORIGINS
+
+    @property
+    def field_encryption_key(self) -> str:
+        return self.FIELD_ENCRYPTION_KEY
+
+    @property
+    def openai_api_key(self) -> str:
+        return self.OPENAI_API_KEY
+
 
 settings = Settings()

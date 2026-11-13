@@ -6,8 +6,8 @@ import uuid
 from datetime import date, datetime, time
 from typing import Any
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Time, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Text, Time, func
+from app.core.types import UUIDStr
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -16,8 +16,8 @@ from app.core.database import Base
 class Medication(Base):
     __tablename__ = "medications"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    id: Mapped[uuid.UUID] = mapped_column(UUIDStr(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUIDStr(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     active_ingredient: Mapped[str] = mapped_column(String(255), nullable=False)
     dosage: Mapped[str] = mapped_column(String(128), nullable=False)
@@ -43,8 +43,8 @@ class Medication(Base):
 class MedicationLog(Base):
     __tablename__ = "medication_logs"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    medication_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("medications.id", ondelete="CASCADE"), nullable=False)
+    id: Mapped[uuid.UUID] = mapped_column(UUIDStr(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    medication_id: Mapped[uuid.UUID] = mapped_column(UUIDStr(as_uuid=True), ForeignKey("medications.id", ondelete="CASCADE"), nullable=False)
     taken_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now())
     status: Mapped[str] = mapped_column(String(32), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

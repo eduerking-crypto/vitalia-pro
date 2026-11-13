@@ -1,4 +1,8 @@
+"""Agentes del asistente. El router clasifica la intención y responde.
+
+Los agentes especializados viven en el router (biología, nutrición, seguridad)
+hasta que se dividan en módulos propios.
+"""
+
 from app.agents.biology_agent import biology_agent  # noqa: F401
-from app.agents.nutrition_agent import nutrition_agent  # noqa: F401
-from app.agents.security_agent import security_agent  # noqa: F401
-from app.agents.router import run_assistant, build_graph  # noqa: F401
+from app.agents.router import build_graph, run_assistant  # noqa: F401

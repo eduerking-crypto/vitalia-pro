@@ -8,8 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Eye, EyeOff, Mail, Lock, AlertCircle, ArrowRight, Heart } from "lucide-react";
 import { Button, Input, Alert, Card, CardHeader, CardContent } from "@/components/ui";
-import { DEMO_CREDENTIALS } from "@/lib/constants";
+import { DEMO_CREDENTIALS, STATIC_AUTH } from "@/lib/constants";
 import { isDemoMode } from "@/lib/api/client";
+import { loginAgainstApi } from "@/lib/auth-client";
 
 const loginSchema = z.object({
   email: z.string().email("Introduce un correo válido"),
@@ -36,6 +37,14 @@ export default function LoginPage() {
     setError(null);
 
     try {
+      if (STATIC_AUTH) {
+        // Sitio estático: no hay NextAuth, se autentica contra la API.
+        await loginAgainstApi(values.email, values.password);
+        await router.push("/");
+        await router.refresh();
+        return;
+      }
+
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,

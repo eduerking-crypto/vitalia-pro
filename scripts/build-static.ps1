@@ -2,8 +2,10 @@
 # Uso:
 #   pnpm --filter @vitalia/web build:static
 #   powershell -File scripts/build-static.ps1 -BasePath /vitalia-pro -SkipMobileCopy
+#   powershell -File scripts/build-static.ps1 -BasePath /vitalia-pro -SkipMobileCopy -ApiUrl https://mi-api.example.com
 param(
     [string]$BasePath = "",
+    [string]$ApiUrl = "",
     [switch]$SkipMobileCopy
 )
 
@@ -25,7 +27,17 @@ Move-Item $api $apiOff
 try {
     Push-Location $web
     $env:STATIC_EXPORT = "true"
-    $env:NEXT_PUBLIC_DEMO_MODE = "true"
+    if ($ApiUrl) {
+        # Sitio conectado a la API real (login directo, sin NextAuth).
+        $env:NEXT_PUBLIC_API_URL = $ApiUrl
+        $env:NEXT_PUBLIC_DEMO_MODE = "false"
+        $env:NEXT_PUBLIC_STATIC_AUTH = "true"
+    } else {
+        # Sin API: modo demostración con datos locales.
+        $env:NEXT_PUBLIC_DEMO_MODE = "true"
+        Remove-Item Env:NEXT_PUBLIC_API_URL -ErrorAction SilentlyContinue
+        Remove-Item Env:NEXT_PUBLIC_STATIC_AUTH -ErrorAction SilentlyContinue
+    }
     if ($BasePath) { $env:STATIC_BASE_PATH = $BasePath } else { Remove-Item Env:STATIC_BASE_PATH -ErrorAction SilentlyContinue }
     pnpm build
     if ($LASTEXITCODE -ne 0) { throw "next build falló" }
@@ -33,6 +45,7 @@ try {
     Pop-Location
     if (Test-Path $apiOff) { Move-Item $apiOff $api -Force }
     Remove-Item Env:STATIC_EXPORT -ErrorAction SilentlyContinue
+    Remove-Item Env:STATIC_BASE_PATH -ErrorAction SilentlyContinue
 }
 
 if (-not (Test-Path $out)) { throw "No se generó la carpeta out/" }

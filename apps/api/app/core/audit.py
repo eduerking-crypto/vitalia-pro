@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import uuid
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -40,7 +41,7 @@ async def record(
     record_hash = hashlib.sha256(chain_input.encode("utf-8")).hexdigest()
 
     entry = AuditLog(
-        actor_id=actor_id,
+        actor_id=uuid.UUID(actor_id) if actor_id else None,
         action=action,
         resource_type=resource_type,
         resource_id=resource_id,

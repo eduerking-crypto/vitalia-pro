@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import uuid
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -134,7 +134,7 @@ async def seed() -> None:
         session.add(Document(
             id=uuid.uuid4(), user_id=user.id, filename="informe-cardiologia-2026.pdf",
             document_type="Informe médico", file_url="#", file_size=384221,
-            uploaded_at=datetime.now(timedelta(hours=1)), shared_with=["Dra. Carmen Solís"],
+            uploaded_at=datetime.now(timezone.utc) - timedelta(hours=1), shared_with=["Dra. Carmen Solís"],
         ))
 
         await session.commit()

@@ -16,6 +16,9 @@ import type { AuthResponse } from "@vitalia/shared-types";
 /** URL base de la API FastAPI (vacío = modo demo forzado). */
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
+/** Sitio estático publicado (sin NextAuth): login directo contra la API. */
+export const STATIC_AUTH = process.env.NEXT_PUBLIC_STATIC_AUTH === "true";
+
 /** Credenciales demo cuando la API no está disponible. */
 export const DEMO_CREDENTIALS = {
   email: "demo@vitalia.health",

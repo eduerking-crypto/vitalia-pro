@@ -2,19 +2,22 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict
 
 
 class DocumentOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
-    user_id: str
+    id: UUID
+    user_id: UUID
     filename: str
     document_type: str
     file_url: str
     file_size: int
-    uploaded_at: str
+    uploaded_at: datetime
     shared_with: list[str]
 
 

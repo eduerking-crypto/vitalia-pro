@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime
+from uuid import UUID
+
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -10,9 +13,9 @@ from pydantic import BaseModel, ConfigDict, Field
 class MealOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
-    user_id: str
-    date: str
+    id: UUID
+    user_id: UUID
+    date: date
     meal_type: str
     food_name: str
     calories: int
@@ -25,7 +28,7 @@ class MealOut(BaseModel):
 
 
 class MealCreate(BaseModel):
-    date: str
+    date: date
     meal_type: str = "breakfast"
     food_name: str = Field(min_length=1)
     calories: int = Field(ge=0)
@@ -38,7 +41,7 @@ class MealCreate(BaseModel):
 
 
 class DailySummaryOut(BaseModel):
-    date: str
+    date: date
     total_calories: int
     total_protein_g: float
     total_carbs_g: float

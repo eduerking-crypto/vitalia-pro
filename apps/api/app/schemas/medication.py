@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from datetime import date, datetime, time as TimeType
+from uuid import UUID
+
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -10,16 +13,16 @@ from pydantic import BaseModel, ConfigDict, Field
 class MedicationOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
-    user_id: str
+    id: UUID
+    user_id: UUID
     name: str
     active_ingredient: str
     dosage: str
     frequency: str
-    time: str
+    time: TimeType
     instructions: str
-    start_date: str
-    end_date: str | None
+    start_date: date
+    end_date: date | None
     is_active: bool
     reminder_enabled: bool
     remaining_quantity: int
@@ -32,10 +35,10 @@ class MedicationCreate(BaseModel):
     active_ingredient: str = Field(min_length=1)
     dosage: str = Field(min_length=1)
     frequency: str = "once_daily"
-    time: str
+    time: TimeType
     instructions: str | None = ""
-    start_date: str
-    end_date: str | None = None
+    start_date: date
+    end_date: date | None = None
     reminder_enabled: bool = True
     remaining_quantity: int = 0
     prescribed_by: str | None = ""
@@ -46,10 +49,10 @@ class MedicationUpdate(BaseModel):
     active_ingredient: str | None = None
     dosage: str | None = None
     frequency: str | None = None
-    time: str | None = None
+    time: TimeType | None = None
     instructions: str | None = None
-    start_date: str | None = None
-    end_date: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
     is_active: bool | None = None
     reminder_enabled: bool | None = None
     remaining_quantity: int | None = None
@@ -59,7 +62,7 @@ class MedicationUpdate(BaseModel):
 class MedicationLogOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
+    id: UUID
     medication_id: str
     taken_at: str
     status: str

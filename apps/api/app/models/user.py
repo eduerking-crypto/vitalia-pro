@@ -6,17 +6,18 @@ import uuid
 from datetime import date, datetime
 from typing import Any
 
-from sqlalchemy import Date, DateTime, String, func
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Date, DateTime, ForeignKey, String, func
+from sqlalchemy import JSON, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
+from app.core.types import UUIDStr
 
 
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(UUIDStr(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -60,15 +61,21 @@ class User(Base):
 class MedicalProfile(Base):
     __tablename__ = "medical_profiles"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUIDStr(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUIDStr(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True)
     blood_type: Mapped[str | None] = mapped_column(String(8), nullable=True)
     height_cm: Mapped[float | None] = mapped_column(nullable=True)
     weight_kg: Mapped[float | None] = mapped_column(nullable=True)
-    chronic_conditions: Mapped[list[str]] = mapped_column(JSONB(astext_type=Any), default=list, server_default="[]")
-    family_history: Mapped[list[str]] = mapped_column(JSONB(astext_type=Any), default=list, server_default="[]")
+    chronic_conditions: Mapped[list[str]] = mapped_column(JSON, default=list, server_default="[]")
+    family_history: Mapped[list[str]] = mapped_column(JSON, default=list, server_default="[]")
     emergency_contact_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     emergency_contact_phone_enc: Mapped[str | None] = mapped_column(nullable=True)
+
+    @property
+    def emergency_contact_phone(self) -> str | None:
+        """Alias público del teléfono (el campo en BD es *_enc)."""
+        return self.emergency_contact_phone_enc
+
     insurance_provider: Mapped[str | None] = mapped_column(String(255), nullable=True)
     insurance_policy: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -83,8 +90,8 @@ class MedicalProfile(Base):
 class Allergy(Base):
     __tablename__ = "allergies"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    profile_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("medical_profiles.id", ondelete="CASCADE"), nullable=False)
+    id: Mapped[uuid.UUID] = mapped_column(UUIDStr(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    profile_id: Mapped[uuid.UUID] = mapped_column(UUIDStr(as_uuid=True), ForeignKey("medical_profiles.id", ondelete="CASCADE"), nullable=False)
     allergen: Mapped[str] = mapped_column(String(255), nullable=False)
     severity: Mapped[str] = mapped_column(String(32), nullable=False)
     reaction: Mapped[str | None] = mapped_column(nullable=True)

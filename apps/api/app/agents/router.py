@@ -8,7 +8,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.graph import StateGraph
 
 from app.core.config import settings
-from app.core.integrations.openai_client import chat_completion
+from app.integrations.openai_client import chat_completion
 
 SYSTEM_PROMPT = (
     "Eres un asistente de salud de VITALIA Pro. Responde en español, de forma clara, "
