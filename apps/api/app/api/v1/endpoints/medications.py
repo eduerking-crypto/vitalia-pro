@@ -77,10 +77,14 @@ async def delete_medication(
 async def mark_taken(
     medication_id: str,
     request: Request,
-    status_value: str = Query("taken"),
     session: AsyncSession = Depends(get_session),
     current_user=Depends(get_current_user),
 ) -> Any:
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    status_value = str(body.get("status") or "taken")
     med = await medication_service.get_medication(session, medication_id, str(current_user.id))
     if not med:
         raise HTTPException(status_code=404, detail="Medicamento no encontrado.")

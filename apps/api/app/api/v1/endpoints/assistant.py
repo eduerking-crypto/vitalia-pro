@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,17 +22,26 @@ async def assistant_chat(
     session: AsyncSession = Depends(get_session),
     current_user=Depends(get_current_user),
 ) -> Any:
-    from sqlalchemy import select
-    result = await session.execute(
-        select(_).where(_.id == current_user.id)
-    )
-    user = result.scalar_one_or_none()
     context = {
         "user_id": str(current_user.id),
-        "full_name": user.full_name if user else "",
+        "full_name": current_user.full_name,
         "role": current_user.role,
     }
-    return await run_assistant(data.message, str(current_user.id), context)
+    result = await run_assistant(data.message, str(current_user.id), context)
+    message = {
+        "id": uuid4(),
+        "user_id": current_user.id,
+        "role": "assistant",
+        "content": result["reply"],
+        "agent": result["agent"],
+        "created_at": datetime.now(timezone.utc),
+    }
+    return {
+        "message": message,
+        "agent_used": result["agent"],
+        "agent_reasoning": result["reasoning"],
+        "disclaimers": result["disclaimers"],
+    }
 
 
 @router.get("/assistant/history", response_model=list[ChatMessageOut])
