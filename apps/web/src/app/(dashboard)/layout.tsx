@@ -6,6 +6,15 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
+import { useAuthStore } from "@/stores/use-auth-store";
+import { DEMO_CREDENTIALS } from "@/lib/constants";
+
+/** ¿Estamos en modo demostración? (API en localhost o bandera activa) */
+const DEMO =
+  process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+  (process.env.NEXT_PUBLIC_API_URL ?? "").includes("localhost") ||
+  (process.env.NEXT_PUBLIC_API_URL ?? "").includes("127.0.0.1") ||
+  !process.env.NEXT_PUBLIC_API_URL;
 
 /** Layout autenticado: sidebar + topbar + guardia de sesión. */
 export default function DashboardLayout({
@@ -17,13 +26,28 @@ export default function DashboardLayout({
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // En modo demo, autentica directamente al usuario demo sin sesión real.
   useEffect(() => {
-    if (status === "unauthenticated") {
+    if (!DEMO) return;
+    const store = useAuthStore.getState();
+    if (!store.isAuthenticated) {
+      const u = DEMO_CREDENTIALS.authResponse.user;
+      store.setUser({ id: u.id, email: u.email, name: u.full_name, role: u.role });
+      store.setTokens(
+        DEMO_CREDENTIALS.authResponse.access_token,
+        DEMO_CREDENTIALS.authResponse.refresh_token,
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!DEMO && status === "unauthenticated") {
       router.replace("/login");
     }
   }, [status, router]);
 
-  if (status === "loading") {
+  // En modo demo nunca bloqueamos: renderizamos directamente.
+  if (!DEMO && status === "loading") {
     return (
       <div
         className="flex min-h-screen items-center justify-center bg-bone dark:bg-neutral-950"
@@ -38,7 +62,7 @@ export default function DashboardLayout({
     );
   }
 
-  if (status === "unauthenticated") {
+  if (!DEMO && status === "unauthenticated") {
     return null;
   }
 

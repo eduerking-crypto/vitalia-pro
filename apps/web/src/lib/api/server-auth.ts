@@ -1,6 +1,20 @@
 import type { AuthResponse } from "@vitalia/shared-types";
 import { DEMO_CREDENTIALS } from "@/lib/constants";
-import { isDemoMode } from "./client";
+
+/**
+ * Detecta el modo demostración sin importar client.ts (que depende del
+ * navegador: axios, localStorage). En el servidor (NextAuth) se evalúa
+ * aquí para poder autenticar al usuario demo sin llamadas de red.
+ */
+function serverDemoMode(): boolean {
+  const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE;
+  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+  return (
+    demoMode === "true" ||
+    apiBase.includes("localhost") ||
+    apiBase.includes("127.0.0.1")
+  );
+}
 
 /**
  * Login contra la API FastAPI.
@@ -13,7 +27,7 @@ export async function loginWithApi(input: {
   mfaCode?: string;
 }): Promise<AuthResponse | null> {
   // Modo demostración: credenciales demo sin MFA, sin llamadas de red.
-  if (isDemoMode()) {
+  if (serverDemoMode()) {
     const email = input.email.trim().toLowerCase();
     if (
       email === DEMO_CREDENTIALS.email &&
